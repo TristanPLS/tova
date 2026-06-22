@@ -1,0 +1,19 @@
+# Workspace TOVA — squelette pose au jalon J0.
+# Les crates applicatives (tova-board, tova-protocol, tova-threshold, tova-node,
+# tova-wasm, tova-cli, tova-verify) sont ajoutees au fil des jalons J1->J4 (voir docs/backlog.md).
+[workspace]
+resolver = "2"
+members = ["crates/tova-core"]
+
+[workspace.package]
+edition = "2021"
+license = "AGPL-3.0-only"
+repository = "https://example.invalid/tova"
+rust-version = "1.74"
+
+# Profils : la crypto a besoin d'optimisations meme en dev pour des tests rapides.
+[profile.dev]
+opt-level = 1
+
+[profile.release]
+lto = "thin"

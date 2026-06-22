@@ -1,0 +1,49 @@
+# CI minimale honnete (REFERENCE-PROJET.md §9) : format + lint + build + tests.
+# Enrichie a chaque jalon (cargo-audit/deny des J1, fuzz/miri sur tova-core).
+name: ci
+on:
+  pull_request:
+  push:
+    branches: [dev, main]
+
+env:
+  CARGO_TERM_COLOR: always
+  RUSTFLAGS: "-D warnings"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Toolchain Rust stable (+ clippy, rustfmt)
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          components: clippy, rustfmt
+      - uses: Swatinem/rust-cache@v2
+      - name: Format
+        run: cargo fmt --all -- --check
+      - name: Clippy
+        run: cargo clippy --workspace --all-targets --all-features -- -D warnings
+      - name: Build
+        run: cargo build --workspace --all-targets
+      - name: Tests
+        run: cargo test --workspace --all-features
+
+  # Refuse une PR sans entree de journal dans logs/ (REFERENCE §7, §9), sauf label "skip-log".
+  log-present:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Verifier la presence d'un log
+        if: ${{ !contains(github.event.pull_request.labels.*.name, 'skip-log') }}
+        run: |
+          base="origin/${{ github.base_ref }}"
+          if git diff --name-only "$base"...HEAD | grep -q '^logs/.*\.md$'; then
+            echo "OK : au moins un fichier logs/*.md present dans la PR."
+          else
+            echo "REFUS : aucune entree logs/*.md dans cette PR (ajoute un log ou pose le label 'skip-log')."
+            exit 1
+          fi
