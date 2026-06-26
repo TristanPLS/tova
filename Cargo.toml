@@ -8,7 +8,7 @@ members = ["crates/tova-core"]
 [workspace.package]
 edition = "2021"
 license = "AGPL-3.0-only"
-repository = "https://example.invalid/tova"
+repository = "https://github.com/TristanPLS/tova"
 rust-version = "1.74"
 
 # Profils : la crypto a besoin d'optimisations meme en dev pour des tests rapides.

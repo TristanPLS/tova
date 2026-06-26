@@ -32,3 +32,6 @@ Thumbs.db
 .idea/
 .vscode/
 *.swp
+
+# --- Cache d'outillage local (jamais versionne) ---
+.impeccable/
