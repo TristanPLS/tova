@@ -29,6 +29,30 @@ jobs:
       - name: Tests
         run: cargo test --workspace --all-features
 
+  # Verifie la MSRV declaree (Cargo.toml rust-version) : sinon la valeur n'est qu'une promesse non testee.
+  msrv:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Toolchain MSRV figee
+        uses: dtolnay/rust-toolchain@1.74.0
+      - uses: Swatinem/rust-cache@v2
+      - name: Build sur la MSRV
+        run: cargo build --workspace
+
+  # tova-core vise WASM (no_std+alloc) : exerce la cible des maintenant pour attraper toute regression de portabilite.
+  wasm:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Toolchain stable + cible wasm32
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: wasm32-unknown-unknown
+      - uses: Swatinem/rust-cache@v2
+      - name: Build tova-core en wasm32
+        run: cargo build -p tova-core --target wasm32-unknown-unknown
+
   # Refuse une PR sans entree de journal dans logs/ (REFERENCE §7, §9), sauf label "skip-log".
   log-present:
     runs-on: ubuntu-latest
@@ -41,9 +65,10 @@ jobs:
         if: ${{ !contains(github.event.pull_request.labels.*.name, 'skip-log') }}
         run: |
           base="origin/${{ github.base_ref }}"
-          if git diff --name-only "$base"...HEAD | grep -q '^logs/.*\.md$'; then
-            echo "OK : au moins un fichier logs/*.md present dans la PR."
+          # Exige un VRAI journal date (logs/YYYY-MM-DD__role__slug.md), pas seulement logs/README.md.
+          if git diff --name-only "$base"...HEAD | grep -qE '^logs/[0-9]{4}-[0-9]{2}-[0-9]{2}__.+\.md$'; then
+            echo "OK : au moins un journal date logs/AAAA-MM-JJ__*.md present dans la PR."
           else
-            echo "REFUS : aucune entree logs/*.md dans cette PR (ajoute un log ou pose le label 'skip-log')."
+            echo "REFUS : aucun journal date logs/AAAA-MM-JJ__*.md dans cette PR (ajoute un log ou pose le label 'skip-log')."
             exit 1
           fi

@@ -56,9 +56,12 @@ Le point le plus important du projet, et l'erreur n°1 à ne pas commettre : **i
 souvent confondues.
 
 ### Couche A — Identité / éligibilité / unicité (le « façon Monero »)
-- **Signature de cercle LINKABLE** : `LSAG` (Liu-Wei-Wong, ACISP 2004) ou `CLSAG` mono-layer (Monero, eprint
-  2019/654). La signature de cercle **classique** (RST 2001) est **à exclure** : elle n'offre aucun anti-double-vote.
-- **Key image / nullifier** : `I = x · H_p(P || election_id)`, déterministe par (électeur, scrutin). Deux votes
+- **Signature de cercle LINKABLE** : `bLSAG`/`CLSAG` mono-layer (key image **par-clé** façon CryptoNote/Monero —
+  van Saberhagen ; CLSAG eprint 2019/654 ; structure d'anneau de la famille `LSAG` de Liu-Wei-Wong, ACISP 2004,
+  mais key image **indépendante de l'anneau**). La signature de cercle **classique** (RST 2001) est **à exclure** :
+  elle n'offre aucun anti-double-vote.
+- **Key image / nullifier** : `I = x · H_p(compress(P) ‖ len ‖ election_id)` (forme canonique longueur-préfixée,
+  cf. `docs/spec-crypto.md` §2), déterministe par (électeur, scrutin). Deux votes
   du même électeur ⇒ même `I` ⇒ rejet. `I` ne révèle ni la clé privée `x` ni la clé publique `P`. La
   *domain-separation* par `election_id` ferme le recoupement entre scrutins.
 - Isolée derrière un **trait Rust `MembershipProof`** : remplaçable en V2 par un nullifier Merkle+SNARK
@@ -245,8 +248,9 @@ image), écosystème Serai (`monero-clsag`, à titre d'oracle de test, **non aud
 - **Livrables** : witnesses indépendants co-signant/gossipant les STH ; builds reproductibles + checksums liés
   au hash source ; distribution du bundle WASM hors serveur d'urne (SRI/signature) ; rate-limit + rejet des
   inputs non-canoniques + fuzzing étendu ; couche réseau anonyme documentée (Tor/relais) ; **guide de conformité
-  FR** (loi 2022-46 vote à distance en association ; CNIL délib. 2019-053 : *qui vote quand* traçable, *qui vote
-  quoi* secret).
+  FR** (cadre du vote électronique en association loi 1901 / syndicat — liberté statutaire et AG dématérialisées,
+  Code du travail pour les scrutins professionnels ; CNIL délib. 2019-053 : *qui vote quand* traçable, *qui vote
+  quoi* secret). *(NB : ne pas citer la loi 2022-46, qui est la loi « gestion de crise sanitaire », sans rapport.)*
 - **DoD** : divergence de board détectée par le gossip ; deux builds indépendants → même checksum ; fuzzing sans
   `panic` ; guide relu.
 
