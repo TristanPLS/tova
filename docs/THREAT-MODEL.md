@@ -25,6 +25,9 @@
 | Jusqu'à `t-1` garants corrompus | Ne peuvent ni déchiffrer un bulletin ni reconstruire la clé. |
 | Votant malhonnête | Tente double-vote, bulletin invalide, forge de signature. **Bloqué par la crypto.** |
 | Adversaire réseau actif | Peut corréler IP/timing ↔ key image si le transport n'est pas protégé (J5). |
+| `≥ t` garants coalisés | **Déchiffrent n'importe quel bulletin individuel** (pas seulement l'agrégat) : le secret du choix s'effondre. La sûreté repose sur « au plus `t-1` malhonnêtes ». Atténué par `n≥5/t≥3` + garants d'organisations distinctes. |
+| Coordinateur *actif* malveillant (censure) | **Hors** modèle honnête-mais-curieux. Peut refuser/supprimer sélectivement un dépôt. La non-inclusion est *détectable* (board append-only + audit), mais **non imputable** sans reçu de soumission signé (cf. §5). |
+| Client de vote compromis / bugué | **Hors** périmètre crypto (cf. §3), à nommer : peut chiffrer un autre choix que celui voulu (échec *cast-as-intended*) de façon indétectable — aucun mécanisme type challenge Benaloh. |
 
 ## 3. Hors périmètre (assumé)
 
@@ -37,9 +40,10 @@
 
 ## 4. Propriétés : GARANTIES vs NON GARANTIES
 
-**Garanties** (sous DL/DDH, ROM, et hypothèses de seuil/witnesses honnêtes) : éligibilité ; unicité ; anonymat
-d'identité et de choix contre observateur passif ; vérifiabilité individuelle et universelle ; software
-independence.
+**Garanties** (sous DL/DDH, ROM, hypothèse de seuil « au plus `t-1` garants malhonnêtes », et witnesses
+honnêtes) : éligibilité ; unicité ; anonymat d'identité et de choix contre observateur passif ; vérifiabilité
+individuelle et universelle ; software independence **du décompte** (résultat rejouable depuis les données
+publiques).
 
 **NON garanties (à communiquer explicitement)** :
 1. **Résistance à la coercition / achat de voix** — key image déterministe = reçu cryptographique.
@@ -49,6 +53,18 @@ independence.
    indétectables par la crypto (mitigation organisationnelle : liste nominative réconciliable + éclatement du
    registrar).
 5. **Disponibilité sous DoS** — l'urne (vérif LSAG `O(N)`) et le seuil de garants sont des cibles.
+6. **Secret du bulletin individuel si `≥ t` garants colludent** — le déchiffrement à seuil permet à `t` garants
+   de déchiffrer n'importe quel chiffré. « Ne déchiffrer que le total » est une **politique** auditée, pas une
+   contrainte cryptographique : le secret du choix n'est garanti que sous « au plus `t-1` garants malhonnêtes ».
+7. **Cast-as-intended** — aucun mécanisme (type challenge Benaloh) ne prouve au votant que le client a chiffré le
+   choix *voulu* ; la software independence couvre le **décompte** (recorded-as-counted), pas la **saisie**. Un
+   client bugué/malveillant corrompt le vote à la source, indétectablement.
+8. **Secret du vote en cas de (quasi-)unanimité** — le résultat agrégé révèle les votes individuels quand le
+   total est unanime (N-0) ou quasi-unanime (dissident isolé), indépendamment de la crypto ; risque accru à
+   petit `N` et pour les sous-groupes.
+9. **Censure sélective imputable** — un coordinateur actif peut refuser un dépôt ; la non-inclusion est
+   détectable (audit) mais **non prouvable** par le votant, faute de reçu de soumission signé et de procédure de
+   litige (à concevoir).
 
 ## 5. Menaces critiques et conditions de déploiement
 
@@ -61,6 +77,10 @@ independence.
 | Équivocation du board (split-view) | Élevée | Mitigée *si* witnesses indépendants | Witnesses génuinement tiers ; client vérifie les consistency proofs. |
 | Fuite de `x` par réutilisation de nonce | Élevée | Mitigée par design | Nonces **déterministes (RFC 6979)** ; refus de signer sans `crypto.getRandomValues`. |
 | DoS urne / garants | Moyenne | À traiter (J5) | Rate-limit + ordre des vérifs (forme → LSAG) ; garants `n≥5/t≥3` ; fenêtre extensible. |
+| Substitution de la clé d'élection `EK` | Élevée | À spécifier | `EK` ancrée sur le board (STH) **et absorbée par le transcript** ; le client vérifie que la `EK` servie = sortie DKG ancrée avant de chiffrer. |
+| Déchiffrement de bulletins par `≥ t` garants | Élevée | Hypothèse de seuil | `n≥5/t≥3` ; garants d'**organisations distinctes** ; n'extraire que l'agrégat (politique auditée, cf. §4.6). |
+| Censure / suppression sélective (coordinateur actif) | Moyenne | À traiter | Reçu de soumission signé (engagement d'inclusion avant STH `n+k`) rendant la censure imputable + procédure de litige. |
+| Fuite par (quasi-)unanimité | Moyenne | Limite intrinsèque | Avertir ; recommander un quorum d'anonymat minimal ; déconseiller sur très petits corps électoraux / sous-groupes. |
 
 **Verdict (audit) :** défendable pour un usage associatif/syndical à **enjeu modéré**, **sous conditions
 strictes** et **seulement après audit crypto externe**. Dangereux si déployé sans audit du cœur sur-mesure, ou

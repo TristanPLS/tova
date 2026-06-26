@@ -44,11 +44,18 @@
 
 - **Chiffrement** : ElGamal exponentiel additif sur Ristretto sous la clé d'élection `EK`. Un vote pour
   l'option `j` chiffre `1` sur la composante `j`, `0` ailleurs : `Enc(EK, m) = (r·G, m·G + r·EK)`, `r ←$ Z_ℓ`.
-- **Preuve de validité du bulletin** : disjunctive Chaum-Pedersen — chaque composante ∈ {0,1} et somme = 1.
+- **Preuve de validité du bulletin** : **`K` preuves disjonctives Chaum-Pedersen** (chaque composante ∈ {0,1}) **+ une** preuve Chaum-Pedersen que le produit homomorphe des `K` composantes chiffre exactement `1` (tuple DH `(G, EK, R_agg, C_agg − G)`, témoin `Σ r_j`) ⇒ **somme = 1**. L'indépendance du générateur `EK` (log discret `log_G(EK)` inconnu) est assurée par la DKG (couche C).
   Transcript `merlin`. **Le transcript doit absorber TOUT le statement** (anneau `R` ou son ancre,
-  `ELECTION_ID`, le chiffré, la key image `I`, les options) **avant** de dériver le challenge — binding total
-  chiffré ↔ preuve ↔ signature, pour interdire le rejeu cross-bulletin (parade au *weak-Fiat-Shamir*).
+  `ELECTION_ID`, **la clé d'élection `EK`**, le chiffré, la key image `I`, les options) **avant** de dériver le
+  challenge — binding total `EK` ↔ chiffré ↔ preuve ↔ signature, pour interdire le rejeu cross-bulletin **et la
+  copie / re-randomisation de bulletin** (Helios / Cortier-Smyth ; parade au *weak-Fiat-Shamir*).
 - **Dépouillement homomorphe** : produit des chiffrés = somme des plaintexts ⇒ on ne déchiffre **que l'agrégat**.
+  Le déchiffrement (couche C) rend `T·G` (forme exponentielle), pas `T` : on **récupère le total `T`** par
+  recherche de log discret **bornée par `N`** votants (table baby-step/giant-step). KAT de dépouillement complet
+  (chiffrés → agrégat → `T`) requis (§7).
+- **Ancrage de `EK`** : la clé d'élection est **publiée et ancrée sur le board** (STH) comme sortie de la DKG ; le
+  client **vérifie** que la `EK` servie correspond à l'ancre **avant** de chiffrer, et l'absorbe dans le transcript
+  — ferme la substitution de clé d'élection par un coordinateur (cf. THREAT-MODEL §5).
 - **Hygiène** : le client **détruit (`zeroize`) `r`** après émission et ne l'exporte jamais (dégrade le reçu
   « pour qui » en « enregistré seulement »).
 - **Trait Rust** : `BallotCipher`.
@@ -82,3 +89,6 @@
 - [ ] Tests **négatifs** : signature forgée rejetée ; bulletin hors {0,1} rejeté ; double `I` rejeté ;
   encodage non-canonique rejeté ; rejeu cross-bulletin rejeté.
 - [ ] Vecteurs ElGamal + preuve de validité + déchiffrement à seuil.
+- [ ] KAT de **dépouillement** : chiffrés → agrégat homomorphe → `T·G` → `T` (récupération log discret bornée par `N`).
+- [ ] Tests négatifs **sur la somme** : une composante = 2 rejetée ; somme = 0 rejetée ; somme = 2 rejetée.
+- [ ] Test d'**ancrage `EK`** : bulletin chiffré sous une `EK` non ancrée / substituée rejeté par le client.

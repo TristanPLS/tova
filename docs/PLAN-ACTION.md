@@ -74,7 +74,7 @@ souvent confondues.
 - **Chiffrement ElGamal exponentiel additif** sur Ristretto, sous une clé d'élection `EK`, + **preuve ZK de
   validité** du bulletin (chaque composante ∈ {0,1}, somme = 1 ; *disjunctive Chaum-Pedersen*).
 - **Dépouillement homomorphe** : on agrège les chiffrés et on ne déchiffre **que le total** — les bulletins
-  individuels restent chiffrés à jamais.
+  individuels restent chiffrés **tant qu'au plus `t-1` garants colludent** — un seuil de `t` garants peut déchiffrer n'importe quel bulletin (politique « total seul », pas garantie cryptographique ; cf. THREAT-MODEL §4.6).
 
 ### Couche C — Confiance répartie
 - **DKG Pedersen** entre `n` garants (`frost-ristretto255`, RFC 9591), clé de déchiffrement partagée `t`-de-`n`.
@@ -102,15 +102,19 @@ souvent confondues.
 | Éligibilité | ✅ Garantie | Signature de cercle valide contre l'anneau figé. |
 | Unicité (un membre = une voix) | ✅ Garantie | Key image dédupliquée sur le registre. |
 | Anonymat d'identité (obs. passif) | ✅ Garantie | Indistinguabilité dans l'anneau (sous DL/DDH). |
-| Anonymat du choix (obs. passif) | ✅ Garantie | ElGamal à seuil + tally homomorphe. |
+| Anonymat du choix (obs. passif) | ✅ Garantie | ElGamal à seuil + tally homomorphe (sous ≤ `t-1` garants malhonnêtes). |
 | Vérifiabilité individuelle | ✅ Garantie | Preuve d'inclusion Merkle + STH. |
 | Vérifiabilité universelle | ✅ Garantie | Vérificateur autonome rejoue tout. |
-| Software independence | ✅ Garantie | Falsifier le résultat impose de casser la crypto. |
+| Software independence **du décompte** | ✅ Garantie | Falsifier le *résultat* impose de casser la crypto (recorded-as-counted). |
 | **Résistance à la coercition / achat de voix** | ❌ **NON garantie** | Key image déterministe = reçu. Atténuée (faiblement) par re-vote. |
 | Anonymat réel à petite échelle | ⚠️ Dégradé | À `n < ~100`, collusion et attaque par exclusion réduisent fortement l'ensemble d'anonymat. |
 | Anonymat face au coordinateur réseau | ⚠️ Non couvert par la crypto | Corrélation IP/timing ⇒ exige une couche transport (Tor/relais). |
 | Intégrité du corps électoral | ⚠️ Hors-crypto | Bourrage par clés fantômes / Sybil = qualité du registre d'adhésion. |
 | Résistance post-quantique | ❌ Hors modèle | *Harvest now, decrypt later* sur le board archivé — à documenter. |
+| Cast-as-intended (saisie) | ❌ **NON garantie** | Aucun challenge type Benaloh ; un client compromis/bugué chiffre indétectablement un autre choix. |
+| Secret du choix si `≥ t` garants colludent | ❌ **NON garantie** | « Total seul » = politique auditée ; `t` garants déchiffrent tout bulletin (THREAT-MODEL §4.6). |
+| Secret du vote en (quasi-)unanimité | ⚠️ Intrinsèque | Le résultat agrégé révèle les votes individuels si le total est unanime/quasi-unanime (accru à petit `N`). |
+| Censure sélective imputable | ⚠️ Hors-crypto | Non-inclusion détectable (audit) mais non prouvable sans reçu de soumission signé + procédure de litige. |
 
 ---
 
