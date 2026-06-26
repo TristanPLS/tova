@@ -41,7 +41,7 @@ cœur sur-mesure, ou commercialisé sous l'étiquette "anonymat absolu". »*
 | **Pour qui** | Associations (loi 1901), syndicats, communautés en ligne. Scrutins à enjeu **modéré**. |
 | **Échelle MVP** | 50 à ~500 membres (anneau = électorat complet, sweet-spot des signatures de cercle). Seuil de bascule documenté à ~2000 (D8). |
 | **Type de scrutin MVP** | Oui/non ou choix unique parmi K options. |
-| **Non-objectifs explicites** | Élections étatiques ; résistance forte à la coercition ; bulletins riches (classements/texte) ; scalabilité > ~2000 sans changement de module ; résistance post-quantique. |
+| **Non-objectifs explicites** | Élections étatiques ; **élections professionnelles / CSE (Code du travail)** ; résistance forte à la coercition ; bulletins riches (classements/texte) ; scalabilité > ~2000 sans changement de module ; résistance post-quantique. |
 | **Promesse défendable** | Éligibilité + unicité (un membre = une voix) + anonymat d'identité **et** de choix contre observateur passif + vérifiabilité individuelle et universelle + *software independence* (Rivest). |
 | **Promesse à NE PAS faire** | « anonymat absolu », « inviolable », « prêt pour de vraies élections » avant audit externe. |
 
