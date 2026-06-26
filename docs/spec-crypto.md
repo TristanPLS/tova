@@ -29,9 +29,12 @@
   ```
   Déterministe par (électeur, scrutin). **Domain-separation à longueur préfixée** (pas de concaténation brute —
   risque de collision). La clé du registre d'unicité **est** `compress(I)` (32 o), jamais un hash d'enveloppe.
-- **Signature de cercle linkable** : LSAG mono-layer (Liu-Wei-Wong 2004) — ou CLSAG mono-layer (eprint
-  2019/654). Prouve en ZK : *« je connais le `x` d'une des `P_i` de `R`, et `I` est sa key image »*, sans
-  révéler laquelle. Challenge Fiat-Shamir dérivé via `merlin`.
+- **Signature de cercle linkable** : **bLSAG/CLSAG mono-layer** — key image **par-clé** façon CryptoNote/Monero
+  (van Saberhagen ; CLSAG eprint 2019/654). La structure d'anneau suit la famille LSAG (Liu-Wei-Wong 2004), mais
+  la key image `I` ne dépend **que de la clé** (jamais de l'anneau `R`, cf. §2 *key image*) — à la différence de
+  la LSAG **originale** dont le tag dépend de tout l'anneau `L` (cette variante autoriserait un double-vote par
+  manipulation de l'anneau, donc **exclue**). Prouve en ZK : *« je connais le `x` d'une des `P_i` de `R`, et `I`
+  est sa key image »*, sans révéler laquelle. Challenge Fiat-Shamir dérivé via `merlin`.
 - **Garanties** : unforgeability, anonymity (dans l'anneau), linkability (2 signatures d'une même clé ⇒ même
   `I`), non-slanderability.
 - **Trait Rust** : `MembershipProof { prove, verify, extract_tag }` — remplaçable en V2 par un nullifier

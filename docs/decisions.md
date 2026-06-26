@@ -19,8 +19,9 @@
 
 ### D2 — Primitive d'identité/unicité
 - **Date** : 2026-06-21
-- **Choix** : signature de cercle **linkable LSAG/CLSAG mono-layer** + key image `I = x·H_p(P‖election_id)`,
-  isolée derrière le trait `MembershipProof`.
+- **Choix** : signature de cercle **linkable bLSAG/CLSAG mono-layer** (key image **par-clé** façon CryptoNote,
+  indépendante de l'anneau) + key image `I = x·H_p(compress(P) ‖ len ‖ election_id)` (forme canonique
+  longueur-préfixée — cf. `docs/spec-crypto.md` §2), isolée derrière le trait `MembershipProof`.
 - **Raison** : seule variante des ring signatures avec anti-double-vote natif, **sans trusted setup** (math
   auditable à la main) — différenciateur réel face à Semaphore/MACI. Le trait rend la bascule `O(n)→O(log n)`
   un changement de module.
