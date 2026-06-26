@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: AGPL-3.0-only
 //! `tova-core` — coeur cryptographique de TOVA.
 //!
 //! Squelette pose au jalon J0 : aucune primitive n'est encore implementee.

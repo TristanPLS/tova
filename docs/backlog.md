@@ -44,7 +44,7 @@
 - [ ] Witnesses indépendants (co-signature + gossip des STH)
 - [ ] Builds reproductibles + checksums ; intégrité du bundle WASM (SRI/signature)
 - [ ] Anti-DoS (rate-limit, ordre des vérifs) ; couche transport anonyme documentée (Tor/relais)
-- [ ] Seuil garants durci `n≥5/t≥3` ; guide de conformité FR (loi 2022-46, CNIL délib. 2019-053)
+- [ ] Seuil garants durci `n≥5/t≥3` ; guide de conformité FR (cadre du vote électronique asso loi 1901 / syndicat — Code du travail pour les scrutins professionnels ; CNIL délib. 2019-053)
 
 ## J6 — Audit externe + crédibilité
 - [ ] Dossier d'audit ; stratégie graduée (test vectors publics, bug bounty, revue académique)
