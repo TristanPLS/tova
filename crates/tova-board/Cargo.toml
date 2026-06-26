@@ -1,0 +1,20 @@
+[package]
+name = "tova-board"
+version = "0.1.0"
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+description = "Registre public append-only de TOVA : arbre de Merkle RFC 6962, Signed Tree Heads, preuves d'inclusion/consistance, export CBOR canonique."
+publish = false
+
+[dependencies]
+sha2.workspace = true
+ed25519-dalek.workspace = true
+serde.workspace = true
+ciborium.workspace = true
+
+[dev-dependencies]
+rand = "0.8"
+rand_core = { version = "0.6", features = ["getrandom"] }
+hex = "0.4"
