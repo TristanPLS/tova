@@ -9,7 +9,9 @@ members = ["crates/tova-core"]
 edition = "2021"
 license = "AGPL-3.0-only"
 repository = "https://github.com/TristanPLS/tova"
-rust-version = "1.74"
+# MSRV verifiee par le job CI `msrv`. Plancher reel = 1.85 : l'arbre de deps (zeroize_derive 1.5)
+# utilise l'edition 2024, stabilisee en Rust 1.85. Valeur realiste pour un projet 2026 (cf. CONS-5/ARCH-1).
+rust-version = "1.85"
 
 # Pin unique des deps crypto partagees par toutes les crates (evite la derive de version
 # de curve25519-dalek -> types RistrettoPoint incompatibles). Chaque crate herite via `.workspace = true`.

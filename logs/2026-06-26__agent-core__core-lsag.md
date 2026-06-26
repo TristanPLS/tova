@@ -16,7 +16,8 @@
   - **Trait `MembershipProof`** { prove / verify / extract_tag } implemente par `Lsag` (frontiere de bascule V2, D2).
   - Tests : 17 d'integration (round-trip, linkabilite, separation cross-scrutin, determinisme, anneau=1, encodage, tous les tests negatifs : hors-anneau, mauvais index/message/eid/anneau, taille incoherente, non-canonique, troncature, KAT key image fige) + 4 proptests (correction, indep. index, linkabilite, rejet d'alteration).
   - `[workspace.dependencies]` (pin unique de `dalek`/`merlin`/etc., ARCH-7) ; `Cargo.lock` versionne.
-  - CI enrichie : job `audit` (cargo-audit RustSec). Jobs `msrv`(1.74)/`wasm32` deja requis valident MSRV et portabilite no_std.
+  - CI enrichie : job `audit` (cargo-audit RustSec). Jobs `msrv`/`wasm32` deja requis valident MSRV et portabilite no_std.
+  - MSRV relevee `1.74 -> 1.85` : l'arbre de deps (zeroize_derive 1.5) est en edition 2024 (stabilisee en 1.85) ; le job `msrv` 1.74 l'a detecte (CONS-5/ARCH-1 confirme). Valeur realiste figee + verifiee en CI.
 - **Fichiers touches** :
   - `crates/tova-core/Cargo.toml`, `crates/tova-core/src/{lib,error,hash,keys,lsag}.rs`, `crates/tova-core/tests/{lsag,proptests}.rs` (crees/modifies)
   - `Cargo.toml` (workspace.dependencies), `Cargo.lock` (cree), `.github/workflows/ci.yml`, `docs/backlog.md` (modifies) ; ce log (cree).
