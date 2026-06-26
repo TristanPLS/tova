@@ -12,8 +12,8 @@
 - [x] `.gitignore`, `.env.example`, squelette workspace Cargo (`tova-core` stub)
 - [x] CI minimale honnête (`.github/workflows/ci.yml`) + template de PR
 - [x] `scripts/install-hooks.sh` (hook pre-commit) + `logs/README.md`
-- [ ] **Humain** : `git init` + 1er commit + branche `dev` (voir script de bootstrap fourni)
-- [ ] **Humain** : remote + protections `main`/`dev` (require PR + status checks), si plateforme
+- [x] `git init` + 1er commit + branche `dev` (bootstrap J0, commit 1c04e25)
+- [x] Remote GitHub + protections `main`/`dev` (PR obligatoire + checks `build`/`log-present`) : `github.com/TristanPLS/tova`
 
 ## J1 — `tova-core` : signature de cercle linkable + key image
 - [ ] Trait `MembershipProof` + LSAG mono-layer sur Ristretto255
