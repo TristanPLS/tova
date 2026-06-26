@@ -3,7 +3,7 @@
 # tova-wasm, tova-cli, tova-verify) sont ajoutees au fil des jalons J1->J4 (voir docs/backlog.md).
 [workspace]
 resolver = "2"
-members = ["crates/tova-core"]
+members = ["crates/tova-core", "crates/tova-board"]
 
 [workspace.package]
 edition = "2021"
@@ -22,6 +22,9 @@ sha2 = { version = "0.10", default-features = false }
 subtle = { version = "2.6", default-features = false }
 zeroize = { version = "1.8", default-features = false, features = ["alloc", "derive"] }
 rand_core = { version = "0.6", default-features = false }
+ed25519-dalek = { version = "2", default-features = false, features = ["alloc", "rand_core", "zeroize"] }
+ciborium = { version = "0.2" }
+serde = { version = "1", default-features = false, features = ["alloc", "derive"] }
 
 # Profils : la crypto a besoin d'optimisations meme en dev pour des tests rapides.
 [profile.dev]
