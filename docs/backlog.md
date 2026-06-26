@@ -18,12 +18,13 @@
 - [x] Cible précisée : exclusion des élections professionnelles / CSE (README, D8) ; revue multi-experts (logs `review`)
 
 ## J1 — `tova-core` : signature de cercle linkable + key image
-- [ ] Trait `MembershipProof` + LSAG mono-layer sur Ristretto255
-- [ ] Key image `I = x·H_p(P‖election_id)` (Elligator) + Fiat-Shamir `merlin` + encodage canonique strict
-- [ ] `subtle` / `zeroize` ; nonces déterministes (RFC 6979)
-- [ ] Test vectors (vs oracle nazgul/Serai, après revue) + proptests d'invariants + tests négatifs
-- [ ] CI enrichie : `cargo-audit`, `cargo-deny`, `cargo-fuzz` (désérialiseurs), `miri`
-- [ ] Figer `docs/spec-crypto.md`
+- [x] Trait `MembershipProof` + LSAG mono-layer (bLSAG/CLSAG) sur Ristretto255
+- [x] Key image `I = x·H_p(compress(P)‖len‖election_id)` (Elligator) + Fiat-Shamir `merlin` + encodage canonique strict
+- [x] `subtle` (compare challenge) / `zeroize` (clé, nonce α) ; nonces **déterministes** (style RFC 6979)
+- [x] Proptests d'invariants (correction, linkabilité, indépendance à l'index, rejet d'altération) + tests négatifs + KAT key image interne (vecteur figé) — *oracle cross-impl nazgul/Serai différé (CRY-8)*
+- [x] `[workspace.dependencies]` (pin `dalek` unique, ARCH-7) ; build `wasm32` no_std vérifié en CI
+- [ ] CI : `cargo-audit` ✅ fait ; `cargo-deny` / `cargo-fuzz` (désérialiseurs) / `miri` **à suivre**
+- [ ] Figer `docs/spec-crypto.md` (couche A implémentée ; gel global après couches B/C/D)
 
 ## J2 — `tova-board` + `tova-protocol`
 - [ ] Merkle append-only (`rs-merkle`) + STH signés + preuves inclusion/consistance + export CBOR canonique
