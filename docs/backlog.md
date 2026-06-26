@@ -13,7 +13,9 @@
 - [x] CI minimale honnête (`.github/workflows/ci.yml`) + template de PR
 - [x] `scripts/install-hooks.sh` (hook pre-commit) + `logs/README.md`
 - [x] `git init` + 1er commit + branche `dev` (bootstrap J0, commit 1c04e25)
-- [x] Remote GitHub + protections `main`/`dev` (PR obligatoire + checks `build`/`log-present`) : `github.com/TristanPLS/tova`
+- [x] Remote GitHub + protections `main`/`dev` (PR obligatoire + checks `build`/`msrv`/`wasm`/`log-present`) : `github.com/TristanPLS/tova`
+- [x] Gouvernance minimale : `SECURITY.md` (signalement privé), `CONTRIBUTING.md` (DCO), squelette `docs/conformite-rgpd.md`
+- [x] Cible précisée : exclusion des élections professionnelles / CSE (README, D8) ; revue multi-experts (logs `review`)
 
 ## J1 — `tova-core` : signature de cercle linkable + key image
 - [ ] Trait `MembershipProof` + LSAG mono-layer sur Ristretto255
@@ -39,17 +41,20 @@
 - [ ] `tova-node` (`axum`, urne stateless, board public, client statique, Dockerfile)
 - [ ] `tova-cli` (init scrutin, cérémonie DKG garant, publication anneau, déchiffrement)
 - [ ] Démo reproductible bout en bout + capture dans `docs/captures/`
+- [ ] Avertissement in-produit (UI de vote) : reçu exploitable + non-résistance à la coercition + page « ce que ce vote garantit / ne garantit pas » (PGL-10)
 
 ## J5 — Durcissement
 - [ ] Witnesses indépendants (co-signature + gossip des STH)
 - [ ] Builds reproductibles + checksums ; intégrité du bundle WASM (SRI/signature)
 - [ ] Anti-DoS (rate-limit, ordre des vérifs) ; couche transport anonyme documentée (Tor/relais)
 - [ ] Seuil garants durci `n≥5/t≥3` ; guide de conformité FR (cadre du vote électronique asso loi 1901 / syndicat — Code du travail pour les scrutins professionnels ; CNIL délib. 2019-053)
+- [ ] Playbook de déploiement (organisation) : sélection de témoins indépendants, éclatement du registrar, désignation/sauvegarde des parts de garants, rôle d'un bureau de vote (PGL-7)
+- [ ] Compléter `docs/conformite-rgpd.md` : AIPD, base légale, rétention/purge, responsable de traitement (PGL-5)
 
 ## J6 — Audit externe + crédibilité
 - [ ] Dossier d'audit ; stratégie graduée (test vectors publics, bug bounty, revue académique)
 - [ ] PoC bascule V2 du module `MembershipProof` (Merkle+nullifier SNARK)
-- [ ] Licence figée + gouvernance (`CONTRIBUTING.md`, code de conduite, RFC crypto)
+- [ ] Licence figée + gouvernance **complète** (étendre `CONTRIBUTING.md` minimal du J0, code de conduite, RFC crypto)
 
 ---
 
