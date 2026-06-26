@@ -80,7 +80,7 @@
 - **Date** : 2026-06-21
 - **Choix** : 50-500 membres, oui/non ou choix unique parmi K, anneau = électorat complet, `n=3/t=2` garants,
   1-2 witnesses. **Non-objectifs** : coercition forte, scalabilité > ~2000 (avant bascule V2), bulletins
-  riches/mixnet, post-quantique, élections étatiques.
+  riches/mixnet, post-quantique, élections étatiques, **élections professionnelles / CSE (Code du travail)**.
 - **Raison** : atteignable par une petite équipe sans sacrifier les deux couches ni la confiance répartie ; le
   ring `O(n)` est parfaitement tenable à cette échelle.
 - **Alternatives écartées** : MVP maximaliste (tout empilé) ; MVP visant des milliers de votants en ring

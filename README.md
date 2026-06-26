@@ -9,8 +9,10 @@ transpose au vote la signature de cercle linkable et la *key image* de Monero, e
 
 ## Pour qui
 
-Associations (loi 1901), syndicats, communautés en ligne — scrutins à **enjeu modéré** (AG, votes internes,
-élections de représentants). TOVA n'est **pas** conçu pour des élections étatiques.
+Associations (loi 1901), syndicats, communautés en ligne — scrutins **internes** à **enjeu modéré** (AG, votes
+internes, consultations). TOVA n'est **pas** conçu pour des élections étatiques, **ni pour les élections
+professionnelles régies par le Code du travail** (CSE, délégués) — fortement régulées et contentieuses —, ni pour
+tout scrutin où l'achat de voix est plausible.
 
 ## Ce que TOVA garantit — et ce qu'il ne garantit pas
 
