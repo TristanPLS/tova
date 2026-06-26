@@ -27,10 +27,10 @@
 - [ ] Figer `docs/spec-crypto.md` (couche A implémentée ; gel global après couches B/C/D)
 
 ## J2 — `tova-board` + `tova-protocol`
-- [ ] Merkle append-only (`rs-merkle`) + STH signés + preuves inclusion/consistance + export CBOR canonique
-- [ ] Machine à états (setup → inscription → vote → clôture) + registre des key images
-- [ ] Politique re-vote vs anti-double-vote strict ; validation au boundary (jamais de `panic`)
-- [ ] Tests d'intégration (double-vote, bulletin invalide, réécriture détectée)
+- [x] Merkle append-only **RFC 6962 implémenté directement** (rs-merkle ne fournit pas la consistance) + STH Ed25519 + preuves inclusion/consistance + export CBOR (`ciborium`)
+- [x] Machine à états (inscription → vote → clôture) + registre des key images
+- [x] Politique re-vote vs anti-double-vote strict ; validation au boundary (jamais de `panic`)
+- [x] Tests d'intégration : **E2E** (inscription → N votes → double-vote bloqué → clôture → export vérifiable), bulletin inéligible, **réécriture détectée** (consistency proof cassée)
 
 ## J3 — Secret du choix : ElGamal à seuil + tally homomorphe
 - [ ] `BallotCipher` : ElGamal exponentiel + preuve de validité (disjunctive Chaum-Pedersen)
