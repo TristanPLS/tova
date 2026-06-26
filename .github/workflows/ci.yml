@@ -35,7 +35,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Toolchain MSRV figee
-        uses: dtolnay/rust-toolchain@1.74.0
+        uses: dtolnay/rust-toolchain@1.85.0
       - uses: Swatinem/rust-cache@v2
       - name: Build sur la MSRV
         run: cargo build --workspace
@@ -52,6 +52,17 @@ jobs:
       - uses: Swatinem/rust-cache@v2
       - name: Build tova-core en wasm32
         run: cargo build -p tova-core --target wasm32-unknown-unknown
+
+  # Audit des vulnerabilites connues (RustSec) sur l'arbre de dependances (J1). cargo-deny/fuzz/miri a suivre.
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: taiki-e/install-action@v2
+        with:
+          tool: cargo-audit
+      - name: cargo audit
+        run: cargo audit
 
   # Refuse une PR sans entree de journal dans logs/ (REFERENCE §7, §9), sauf label "skip-log".
   log-present:

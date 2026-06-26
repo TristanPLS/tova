@@ -1,13 +1,24 @@
 [package]
 name = "tova-core"
-version = "0.0.0"
+version = "0.1.0"
 edition.workspace = true
 license.workspace = true
 rust-version.workspace = true
-description = "Coeur cryptographique de TOVA : signature de cercle linkable + key image. Squelette J0, implementation en J1."
+repository.workspace = true
+description = "Coeur cryptographique de TOVA : signature de cercle linkable (bLSAG/CLSAG mono-layer) + key image sur Ristretto255."
 publish = false
 
 [dependencies]
-# Ajoutees au jalon J1 (voir docs/spec-crypto.md) :
-#   curve25519-dalek (Ristretto255, >=4.1.3), merlin (Fiat-Shamir),
-#   subtle (constant-time), zeroize, rand_core, getrandom.
+curve25519-dalek.workspace = true
+merlin.workspace = true
+sha2.workspace = true
+subtle.workspace = true
+zeroize.workspace = true
+rand_core.workspace = true
+
+[dev-dependencies]
+# Tests sur l'hote (std) : RNG reproductible, proptests, vecteurs hex.
+rand = "0.8"
+rand_chacha = "0.3"
+proptest = "1"
+hex = "0.4"
