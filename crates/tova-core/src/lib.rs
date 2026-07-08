@@ -32,7 +32,7 @@ mod lsag;
 use rand_core::{CryptoRng, RngCore};
 
 pub use ballot::{tally, Ballot, BitProof, ExpElGamal, SumProof, MAX_OPTIONS};
-pub use elgamal::{Ciphertext, ElectionKey, ElectionKeyPair};
+pub use elgamal::{recover_total, Ciphertext, ElectionKey, ElectionKeyPair};
 pub use error::Error;
 pub use keys::{PublicKey, SecretKey};
 pub use lsag::{key_image, sign, verify, KeyImage, LinkableRingSignature, Lsag};

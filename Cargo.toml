@@ -3,7 +3,7 @@
 # tova-wasm, tova-cli, tova-verify) sont ajoutees au fil des jalons J1->J4 (voir docs/backlog.md).
 [workspace]
 resolver = "2"
-members = ["crates/tova-core", "crates/tova-board", "crates/tova-protocol"]
+members = ["crates/tova-core", "crates/tova-board", "crates/tova-protocol", "crates/tova-threshold"]
 
 [workspace.package]
 edition = "2021"
@@ -25,6 +25,11 @@ rand_core = { version = "0.6", default-features = false }
 ed25519-dalek = { version = "2", default-features = false, features = ["alloc", "rand_core", "zeroize"] }
 ciborium = { version = "0.2" }
 serde = { version = "1", default-features = false, features = ["alloc", "derive"] }
+# Couche C (garants) : DKG Pedersen + parts a seuil. Crate auditee (Zcash Fdn, RFC 9591). Cote garant = std.
+# default-features=false : coupe la feature `serialization` (postcard/heapless -> atomic-polyfill non maintenu,
+# RUSTSEC-2023-0089). J3b n'a pas besoin de serialiser les paquets DKG (ceremonie en memoire). A reevaluer en
+# J4 (transport distribue) : soit serialisation maison, soit re-activer la feature avec un ignore documente.
+frost-ristretto255 = { version = "3", default-features = false }
 
 # Profils : la crypto a besoin d'optimisations meme en dev pour des tests rapides.
 [profile.dev]

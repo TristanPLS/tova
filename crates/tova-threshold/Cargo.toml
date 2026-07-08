@@ -1,0 +1,23 @@
+[package]
+name = "tova-threshold"
+version = "0.1.0"
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+description = "Confiance repartie de TOVA : DKG Pedersen (frost-ristretto255) + dechiffrement ElGamal a seuil t-de-n + preuve de dechiffrement correct."
+publish = false
+
+[dependencies]
+# Cote garant : crate std (CLI/ceremonie), pas la cible WASM. Pas de #![no_std] ici (contrairement a tova-core).
+tova-core = { path = "../tova-core" }
+frost-ristretto255.workspace = true
+curve25519-dalek.workspace = true
+merlin.workspace = true
+subtle.workspace = true
+zeroize.workspace = true
+rand_core.workspace = true
+
+[dev-dependencies]
+rand = "0.8"
+rand_chacha = "0.3"
