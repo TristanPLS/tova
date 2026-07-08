@@ -5,7 +5,10 @@ use crate::error::Error;
 use crate::registry::KeyImageRegistry;
 use ed25519_dalek::SigningKey;
 use tova_board::{export_cbor, SignedTreeHead, TransparencyLog};
-use tova_core::{verify, LinkableRingSignature, PublicKey};
+use tova_core::{
+    tally as aggregate_ballots, verify, Ballot, BallotCipher, Ciphertext, ElectionKey, ExpElGamal,
+    LinkableRingSignature, PublicKey,
+};
 
 /// Phase du scrutin. Les transitions sont strictement ordonnees et gardees.
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
@@ -46,6 +49,17 @@ fn encode_entry(signature: &LinkableRingSignature, ballot: &[u8]) -> Vec<u8> {
     entry
 }
 
+/// Extrait les octets du bulletin d'une entree de board (inverse de `encode_entry`). Format partage avec
+/// le verificateur autonome (`tova-verify`).
+fn entry_ballot_bytes(entry: &[u8]) -> Result<&[u8], Error> {
+    if entry.len() < 4 {
+        return Err(Error::MalformedEntry);
+    }
+    let sig_len = u32::from_le_bytes([entry[0], entry[1], entry[2], entry[3]]) as usize;
+    let start = 4usize.checked_add(sig_len).ok_or(Error::MalformedEntry)?;
+    entry.get(start..).ok_or(Error::MalformedEntry)
+}
+
 /// Orchestrateur d'un scrutin : anneau fige, registre des key images, board append-only.
 pub struct Election {
     election_id: Vec<u8>,
@@ -54,11 +68,19 @@ pub struct Election {
     ring: Vec<PublicKey>,
     board: TransparencyLog,
     registry: KeyImageRegistry,
+    election_key: ElectionKey,
+    num_options: usize,
 }
 
 impl Election {
-    /// Cree un scrutin en phase d'inscription.
-    pub fn new(election_id: impl Into<Vec<u8>>, policy: DoubleVotePolicy) -> Self {
+    /// Cree un scrutin en phase d'inscription. `election_key` (issue de la DKG des garants) et `num_options`
+    /// fixent le schema de chiffrement : tout bulletin depose doit etre un chiffre valide sous ces parametres.
+    pub fn new(
+        election_id: impl Into<Vec<u8>>,
+        policy: DoubleVotePolicy,
+        election_key: ElectionKey,
+        num_options: usize,
+    ) -> Self {
         Self {
             election_id: election_id.into(),
             policy,
@@ -66,7 +88,19 @@ impl Election {
             ring: Vec::new(),
             board: TransparencyLog::new(),
             registry: KeyImageRegistry::new(),
+            election_key,
+            num_options,
         }
+    }
+
+    /// Nombre d'options du scrutin (taille d'un bulletin bien forme).
+    pub fn num_options(&self) -> usize {
+        self.num_options
+    }
+
+    /// Cle d'election sous laquelle les bulletins sont chiffres.
+    pub fn election_key(&self) -> ElectionKey {
+        self.election_key
     }
 
     /// Phase courante.
@@ -100,10 +134,11 @@ impl Election {
         &self.ring
     }
 
-    /// Depose un bulletin : verifie l'eligibilite (signature de cercle liant `ballot`) puis l'unicite.
+    /// Depose un bulletin : verifie la **validite** du bulletin (chiffre bien forme + preuve), puis
+    /// l'**eligibilite** (signature de cercle liant les octets exacts du bulletin), puis l'**unicite**.
     ///
-    /// Le `ballot` est le payload opaque (chiffre + preuve de validite a partir de J3) ; ici il est lie a la
-    /// preuve d'eligibilite via le message de la signature de cercle.
+    /// `ballot` = octets canoniques d'un [`tova_core::Ballot`]. La signature de cercle lie ces octets a la key
+    /// image via son message : le bulletin ne peut etre ni transplante ni separe de sa preuve d'eligibilite.
     pub fn cast(
         &mut self,
         signature: &LinkableRingSignature,
@@ -112,6 +147,15 @@ impl Election {
         if self.phase != Phase::Voting {
             return Err(Error::WrongPhase);
         }
+        // Validite : le bulletin doit etre un chiffre bien forme (choix unique) sous EK/num_options/election_id.
+        let parsed = Ballot::from_bytes(ballot).map_err(Error::InvalidBallot)?;
+        ExpElGamal::verify(
+            &parsed,
+            &self.election_key,
+            self.num_options,
+            &self.election_id,
+        )
+        .map_err(Error::InvalidBallot)?;
         // Eligibilite : la signature de cercle doit verifier contre l'anneau fige, en liant le bulletin.
         let tag = verify(signature, &self.ring, &self.election_id, ballot)
             .map_err(Error::IneligibleBallot)?;
@@ -157,6 +201,22 @@ impl Election {
     /// Nombre d'electeurs distincts ayant vote (avant tout dechiffrement).
     pub fn voter_count(&self) -> usize {
         self.registry.voter_count()
+    }
+
+    /// Depouillement homomorphe : agrege les bulletins **comptes** (un par electeur — le dernier en re-vote)
+    /// en un chiffre par option `Enc(total_j)`. N'expose jamais un bulletin isole. A remettre aux garants pour
+    /// le dechiffrement a seuil (`tova-threshold`). Disponible seulement apres cloture.
+    pub fn tally(&self) -> Result<Vec<Ciphertext>, Error> {
+        if self.phase != Phase::Closed {
+            return Err(Error::WrongPhase);
+        }
+        let mut ballots = Vec::with_capacity(self.registry.voter_count());
+        for index in self.registry.indices() {
+            let entry = self.board.entry(index).ok_or(Error::MalformedEntry)?;
+            let ballot_bytes = entry_ballot_bytes(entry)?;
+            ballots.push(Ballot::from_bytes(ballot_bytes).map_err(Error::InvalidBallot)?);
+        }
+        aggregate_ballots(&ballots, self.num_options).map_err(Error::InvalidBallot)
     }
 
     /// Export CBOR public du board + STH (pour le verificateur autonome).

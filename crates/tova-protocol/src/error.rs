@@ -13,8 +13,12 @@ pub enum Error {
     EmptyElectorate,
     /// La preuve d'eligibilite (signature de cercle) est invalide.
     IneligibleBallot(tova_core::Error),
+    /// Bulletin mal forme ou preuve de validite (chiffre {0,1}, somme = 1) invalide.
+    InvalidBallot(tova_core::Error),
     /// Double-vote refuse (politique stricte) : key image deja vue.
     DoubleVote,
+    /// Entree de board mal formee (decodage impossible au depouillement).
+    MalformedEntry,
 }
 
 impl fmt::Display for Error {
@@ -23,7 +27,9 @@ impl fmt::Display for Error {
             Error::WrongPhase => f.write_str("operation interdite dans la phase courante"),
             Error::EmptyElectorate => f.write_str("electorat vide a l'ouverture du vote"),
             Error::IneligibleBallot(e) => write!(f, "bulletin ineligible : {e}"),
+            Error::InvalidBallot(e) => write!(f, "bulletin invalide : {e}"),
             Error::DoubleVote => f.write_str("double-vote refuse (key image deja enregistree)"),
+            Error::MalformedEntry => f.write_str("entree de board mal formee"),
         }
     }
 }
