@@ -59,6 +59,12 @@
 - **Hygiène** : le client **détruit (`zeroize`) `r`** après émission et ne l'exporte jamais (dégrade le reçu
   « pour qui » en « enregistré seulement »).
 - **Trait Rust** : `BallotCipher`.
+- **Statut d'implémentation (J3a, `tova-core`)** : couche B **implémentée** — chiffrement + preuves Sigma +
+  tally homomorphe + déchiffrement autorité-unique (brique/test ; le seuil FROST arrive en J3b). Le transcript
+  du bulletin absorbe `EK ‖ election_id ‖ K ‖ tous les chiffrés` (binding **interne** au bulletin) ; le binding
+  au **niveau signature ↔ key image** (message LSAG = octets du bulletin) est finalisé en **J3c**. Récupération
+  du total par recherche de log discret **linéaire bornée par `N`** (baby-step/giant-step différé si besoin).
+  L'ancrage de `EK` sur le board (ci-dessous) est un contrôle **client/protocole** (J3c/J4), pas du cœur.
 
 ## 4. Couche C — Confiance répartie (DKG + déchiffrement à seuil)
 
