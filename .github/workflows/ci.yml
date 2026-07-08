@@ -1,5 +1,8 @@
 # CI minimale honnete (REFERENCE-PROJET.md §9) : format + lint + build + tests.
 # Enrichie a chaque jalon (cargo-audit/deny des J1, fuzz/miri sur tova-core).
+#
+# Actions tierces epinglees par SHA (commentaire = version lisible) : parade au deplacement de tag
+# (un attaquant qui repointe `@v4` sur du code malveillant). Bump = changer le SHA + le commentaire.
 name: ci
 on:
   pull_request:
@@ -14,12 +17,12 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
       - name: Toolchain Rust stable (+ clippy, rustfmt)
-        uses: dtolnay/rust-toolchain@stable
+        uses: dtolnay/rust-toolchain@4be7066ada62dd38de10e7b70166bc74ed198c30 # stable
         with:
           components: clippy, rustfmt
-      - uses: Swatinem/rust-cache@v2
+      - uses: Swatinem/rust-cache@e18b497796c12c097a38f9edb9d0641fb99eee32 # v2
       - name: Format
         run: cargo fmt --all -- --check
       - name: Clippy
@@ -33,10 +36,10 @@ jobs:
   msrv:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
       - name: Toolchain MSRV figee
-        uses: dtolnay/rust-toolchain@1.85.0
-      - uses: Swatinem/rust-cache@v2
+        uses: dtolnay/rust-toolchain@98effd2fc0b766278e30ab86762dd5e9a8531399 # 1.85.0
+      - uses: Swatinem/rust-cache@e18b497796c12c097a38f9edb9d0641fb99eee32 # v2
       - name: Build sur la MSRV
         run: cargo build --workspace
 
@@ -44,12 +47,12 @@ jobs:
   wasm:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
       - name: Toolchain stable + cible wasm32
-        uses: dtolnay/rust-toolchain@stable
+        uses: dtolnay/rust-toolchain@4be7066ada62dd38de10e7b70166bc74ed198c30 # stable
         with:
           targets: wasm32-unknown-unknown
-      - uses: Swatinem/rust-cache@v2
+      - uses: Swatinem/rust-cache@e18b497796c12c097a38f9edb9d0641fb99eee32 # v2
       - name: Build tova-core en wasm32
         run: cargo build -p tova-core --target wasm32-unknown-unknown
 
@@ -57,19 +60,31 @@ jobs:
   audit:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: taiki-e/install-action@v2
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+      - uses: taiki-e/install-action@50414676f9f5d50a65992c6dd2ed02641263226c # v2
         with:
           tool: cargo-audit
       - name: cargo audit
         run: cargo audit
+
+  # cargo-deny (config deny.toml) : complete `audit` par le controle des LICENCES (compat AGPL) et des
+  # SOURCES (crates.io seul), en plus des advisories. Version epinglee pour la reproductibilite (backlog#J1).
+  deny:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+      - uses: taiki-e/install-action@50414676f9f5d50a65992c6dd2ed02641263226c # v2
+        with:
+          tool: cargo-deny@0.19.9
+      - name: cargo deny check
+        run: cargo deny check
 
   # Refuse une PR sans entree de journal dans logs/ (REFERENCE §7, §9), sauf label "skip-log".
   log-present:
     runs-on: ubuntu-latest
     if: github.event_name == 'pull_request'
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
         with:
           fetch-depth: 0
       - name: Verifier la presence d'un log

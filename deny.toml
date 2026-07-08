@@ -1,0 +1,44 @@
+# Configuration cargo-deny (job CI `deny`) : advisories RustSec, licences autorisees, sources de confiance.
+# Complete cargo-audit (advisories seules) par le controle des licences et des sources (supply chain, backlog#J1).
+# Schema cargo-deny 0.16+ (les champs deprecies `version`/`vulnerability`/`copyleft` ont ete retires).
+
+[graph]
+# Evalue toutes les features activables : le coeur vise l'hote ET WASM, on veut l'arbre complet.
+all-features = true
+
+[advisories]
+# Base d'avis RustSec. Une crate retiree (yanked) fait echouer la CI ; les avis non traites aussi.
+# Toute exception doit etre tracee explicitement ici (id RUSTSEC) avec un commentaire de justification.
+yanked = "deny"
+ignore = []
+
+[licenses]
+# Le projet est AGPL-3.0-only : ses dependances doivent rester sous licences permissives compatibles.
+# Tout ce qui n'est PAS dans `allow` fait echouer la CI (pas de copyleft viral introduit par megarde).
+# Liste resserree aux licences reellement presentes dans l'arbre : une nouvelle licence fait echouer la CI
+# et impose une revue explicite (ajout conscient ici).
+allow = [
+    "MIT",
+    "Apache-2.0",
+    "Apache-2.0 WITH LLVM-exception",
+    "BSD-2-Clause",
+    "BSD-3-Clause",
+    "Unicode-3.0",
+]
+confidence-threshold = 0.9
+# Nos propres crates sont AGPL-3.0-only (publish = false) : on ne s'applique pas a nous-memes la contrainte
+# "permissif" reservee aux dependances tierces.
+private = { ignore = true }
+
+[bans]
+# Plusieurs versions d'une meme crate = signal de bloat / surface d'audit accrue ; non bloquant au MVP.
+multiple-versions = "warn"
+# Une dependance en version wildcard (`*`) tiree d'un registre est non reproductible : interdite.
+wildcards = "deny"
+# ... mais les deps `path = "../..."` intra-workspace (tova-core/board) sont legitimes et exemptees.
+allow-wildcard-paths = true
+
+[sources]
+# Seul crates.io est une source connue. Toute dep tiree d'un git ou d'un registre inconnu fait echouer la CI.
+unknown-registry = "deny"
+unknown-git = "deny"
