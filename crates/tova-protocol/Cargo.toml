@@ -1,0 +1,22 @@
+[package]
+name = "tova-protocol"
+version = "0.1.0"
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+description = "Machine a etats du scrutin TOVA : inscription -> vote -> cloture, registre des key images, politique re-vote / anti-double-vote strict."
+publish = false
+
+[dependencies]
+tova-core = { path = "../tova-core" }
+tova-board = { path = "../tova-board" }
+ed25519-dalek.workspace = true
+
+[dev-dependencies]
+tova-core = { path = "../tova-core" }
+tova-board = { path = "../tova-board" }
+rand = "0.8"
+rand_chacha = "0.3"
+rand_core = { version = "0.6" }
+ed25519-dalek = { version = "2", features = ["rand_core"] }
