@@ -138,6 +138,16 @@ impl core::fmt::Debug for ElectionKeyPair {
     }
 }
 
+/// Recupere le total `T` depuis le point message dechiffre `M = T·G` (forme exponentielle), par log discret
+/// borne par `max`. Frontiere a base d'octets : utilisee par la couche seuil (`tova-threshold`) apres
+/// combinaison des dechiffrements partiels, sans exposer les types de courbe.
+pub fn recover_total(message_point: &[u8; 32], max: u64) -> Result<u64, Error> {
+    let point = CompressedRistretto(*message_point)
+        .decompress()
+        .ok_or(Error::NonCanonicalPoint)?;
+    discrete_log_small(&point, max).ok_or(Error::DecryptionOutOfRange)
+}
+
 /// Encode `m·G` pour un petit entier `m` (le message d'une composante de bulletin, 0 ou 1 au MVP).
 pub(crate) fn encode_small(m: u64) -> RistrettoPoint {
     RistrettoPoint::mul_base(&Scalar::from(m))

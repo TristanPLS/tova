@@ -74,6 +74,13 @@
   de logarithmes).
 - **Défaut MVP** : `n=3, t=2` (D8) ; **durcissement recommandé `n≥5, t≥3`** (audit). Procédure de re-DKG
   documentée. ⚠️ Perte de `> n-t` parts ⇒ élection indéchiffrable.
+- **Statut d'implémentation (J3b, `tova-threshold`)** : couche C **implémentée** — DKG via `frost-ristretto255`
+  (RFC 9591, crate auditée) exposant `EK` + parts `sk_i` ; déchiffrement à seuil **sur-mesure** (partiel
+  `d_i = sk_i·c1`, preuve Chaum-Pedersen `log_G(Y_i)=log_{c1}(d_i)`, interpolation de Lagrange en 0). Pont
+  frost→dalek par **octets** (représentation ristretto255 commune). Crate **std** (côté garant, hors WASM).
+  `frost` intégrée **sans la feature `serialization`** (le transport distribué des paquets DKG relève de J4 :
+  la feature — donc `postcard`/`heapless`/`atomic-polyfill` non maintenu, RUSTSEC-2023-0089 — sera réévaluée là).
+  ⚠️ Le déchiffrement à seuil et la preuve de correction restent sur-mesure ⇒ périmètre d'audit.
 
 ## 5. Couche D — Intégrité publique (transparency log)
 
