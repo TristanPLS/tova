@@ -33,9 +33,9 @@
 - [x] Tests d'intégration : **E2E** (inscription → N votes → double-vote bloqué → clôture → export vérifiable), bulletin inéligible, **réécriture détectée** (consistency proof cassée)
 
 ## J3 — Secret du choix : ElGamal à seuil + tally homomorphe
-- [ ] `BallotCipher` : ElGamal exponentiel + preuve de validité (disjunctive Chaum-Pedersen)
-- [ ] `tova-threshold` : DKG Pedersen + déchiffrement `t`-de-`n` (`frost-ristretto255`) + preuve de déchiffrement
-- [ ] `tova-verify` v1 (rejoue signatures + unicité + validité + consistance + déchiffrement)
+- [x] **J3a** — `BallotCipher` : ElGamal exponentiel `(r·G, m·G + r·EK)` + preuve de validité (`K` disjonctives Chaum-Pedersen ∈{0,1} + 1 preuve de somme = 1), binding total du transcript `merlin` (EK+election_id+tous les chiffres), `zeroize` de l'aléa, tally homomorphe + déchiffrement autorité-unique (brique/test). 16 tests + 3 proptests + soundness (somme=2 / somme=0 rejetées). *(binding au niveau signature/key image finalisé en J3c)*
+- [ ] **J3b** — `tova-threshold` : DKG Pedersen + déchiffrement `t`-de-`n` (`frost-ristretto255`) + preuve de déchiffrement
+- [ ] **J3c** — `tova-verify` v1 (rejoue signatures + unicité + validité + consistance + déchiffrement) + phase de dépouillement dans `tova-protocol`
 
 ## J4 — Client WASM + serveur self-host (MVP démontrable)
 - [ ] `tova-wasm` (clé locale, Argon2id optionnel, construction bulletin, vérif inclusion/STH)

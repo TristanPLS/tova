@@ -5,7 +5,7 @@ edition.workspace = true
 license.workspace = true
 rust-version.workspace = true
 repository.workspace = true
-description = "Coeur cryptographique de TOVA : signature de cercle linkable (bLSAG/CLSAG mono-layer) + key image sur Ristretto255."
+description = "Coeur cryptographique de TOVA : signature de cercle linkable (bLSAG/CLSAG mono-layer) + key image, et bulletin ElGamal exponentiel + preuve de validite, sur Ristretto255."
 publish = false
 
 [dependencies]

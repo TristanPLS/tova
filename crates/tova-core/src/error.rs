@@ -25,6 +25,16 @@ pub enum Error {
     InvalidSignature,
     /// Longueur d'entree invalide a la deserialisation.
     InvalidLength,
+    /// Choix hors de l'intervalle `[0, num_options)` a la construction du bulletin.
+    ChoiceOutOfRange,
+    /// Nombre d'options nul ou superieur a la borne `MAX_OPTIONS`.
+    InvalidOptionCount,
+    /// Structure de bulletin incoherente (nb de chiffres/preuves != nb d'options).
+    InvalidBallotStructure,
+    /// Une preuve de validite du bulletin (bit 0/1 ou somme = 1) ne verifie pas.
+    InvalidBallotProof,
+    /// Dechiffrement : le total ne tombe pas dans l'intervalle attendu (borne depassee ou chiffre corrompu).
+    DecryptionOutOfRange,
 }
 
 impl fmt::Display for Error {
@@ -39,6 +49,11 @@ impl fmt::Display for Error {
             Error::DegenerateKeyImage => "key image degeneree (element neutre)",
             Error::InvalidSignature => "signature de cercle invalide",
             Error::InvalidLength => "longueur d'entree invalide",
+            Error::ChoiceOutOfRange => "choix hors de l'intervalle des options",
+            Error::InvalidOptionCount => "nombre d'options invalide",
+            Error::InvalidBallotStructure => "structure de bulletin incoherente",
+            Error::InvalidBallotProof => "preuve de validite du bulletin invalide",
+            Error::DecryptionOutOfRange => "total dechiffre hors intervalle",
         };
         f.write_str(msg)
     }
