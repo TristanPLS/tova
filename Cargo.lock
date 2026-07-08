@@ -772,6 +772,20 @@ dependencies = [
 ]
 
 [[package]]
+name = "tova-verify"
+version = "0.1.0"
+dependencies = [
+ "ed25519-dalek",
+ "rand 0.8.6",
+ "rand_chacha 0.3.1",
+ "rand_core 0.6.4",
+ "tova-board",
+ "tova-core",
+ "tova-protocol",
+ "tova-threshold",
+]
+
+[[package]]
 name = "typenum"
 version = "1.20.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"

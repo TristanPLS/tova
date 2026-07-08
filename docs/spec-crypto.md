@@ -88,6 +88,22 @@
   (`ed25519-dalek`), preuves d'inclusion **et de consistance**, gossip des STH co-signés par des **witnesses
   indépendants** (non-équivocation). **Pas de blockchain** (D7).
 - Hash : `sha2`/`blake3`. Export public byte-déterministe (CBOR canonique).
+- **Statut d'implémentation (J2 board + J3c `tova-verify`)** : registre (Merkle SHA-256, STH Ed25519, preuves
+  inclusion/consistance, export CBOR) livré en J2. **Vérificateur autonome `tova-verify` (J3c)** : rejoue
+  l'élection depuis les seules données publiques, **indépendamment de `tova-protocol`** — STH signé + racine
+  recalculée + signataire attendu ; signatures de cercle **liant** les octets du bulletin (binding
+  bulletin↔key image) ; unicité des key images (selon politique) ; validité de chaque bulletin ; déchiffrement
+  à seuil (preuves vérifiées, totaux comparés au résultat publié). Verdict OUI/NON : **OUI** sur élection
+  honnête, **NON** sur board falsifié / total mensonger / déchiffrement forgé (testé E2E). Le dépouillement
+  côté protocole (`Election::tally`) n'agrège que les bulletins comptés (un par électeur, le dernier en re-vote).
+  *Witnesses indépendants + gossip = J5 (non encore implémentés).*
+
+---
+
+> **Bilan couches (2026-07-08).** A (identité/unicité, J1), B (secret du choix, J3a), C (confiance répartie,
+> J3b), D (intégrité publique + vérificateur, J2/J3c) : **toutes implémentées**. Spécification **candidate au
+> gel v1.0**. Reste avant gel formel : arbitrage sur le KAT cross-impl (CRY-8 — non byte-compatible car les
+> primitives TOVA sont domain-separated) et `cargo-fuzz`/`miri` (backlog J1). ⚠️ Cœur sur-mesure **non audité**.
 
 ## 6. Aléa et constant-time
 

@@ -35,6 +35,12 @@ impl KeyImageRegistry {
         self.seen.len()
     }
 
+    /// Indices (sur le board) des bulletins **courants** : un par electeur distinct, le dernier en re-vote.
+    /// Sert au depouillement (n'agreger que les bulletins comptes, jamais les entrees supersedees).
+    pub fn indices(&self) -> impl Iterator<Item = usize> + '_ {
+        self.seen.values().copied()
+    }
+
     /// Vrai si aucun vote n'a encore ete enregistre.
     pub fn is_empty(&self) -> bool {
         self.seen.is_empty()

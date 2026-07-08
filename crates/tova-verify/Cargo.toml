@@ -1,0 +1,24 @@
+[package]
+name = "tova-verify"
+version = "0.1.0"
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+description = "Verificateur autonome de TOVA : rejoue une election depuis les seules donnees publiques (software independence)."
+publish = false
+
+[dependencies]
+# Verificateur independant du code serveur : ne depend PAS de tova-protocol (re-implemente la verification a
+# partir des primitives crypto et du registre public). std (binaire d'audit, hors WASM).
+tova-core = { path = "../tova-core" }
+tova-board = { path = "../tova-board" }
+tova-threshold = { path = "../tova-threshold" }
+
+[dev-dependencies]
+# Les tests construisent une election reelle via tova-protocol (cote serveur) pour la re-auditer.
+tova-protocol = { path = "../tova-protocol" }
+ed25519-dalek = { workspace = true }
+rand = "0.8"
+rand_chacha = "0.3"
+rand_core = { workspace = true }

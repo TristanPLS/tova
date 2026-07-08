@@ -23,8 +23,8 @@
 - [x] `subtle` (compare challenge) / `zeroize` (clé, nonce α) ; nonces **déterministes** (style RFC 6979)
 - [x] Proptests d'invariants (correction, linkabilité, indépendance à l'index, rejet d'altération) + tests négatifs + KAT key image interne (vecteur figé) — *oracle cross-impl nazgul/Serai différé (CRY-8)*
 - [x] `[workspace.dependencies]` (pin `dalek` unique, ARCH-7) ; build `wasm32` no_std vérifié en CI
-- [ ] CI : `cargo-audit` ✅ fait ; `cargo-deny` / `cargo-fuzz` (désérialiseurs) / `miri` **à suivre**
-- [ ] Figer `docs/spec-crypto.md` (couche A implémentée ; gel global après couches B/C/D)
+- [ ] CI : `cargo-audit` ✅ + `cargo-deny` ✅ (licences/sources, P1) ; `cargo-fuzz` (désérialiseurs) / `miri` **à suivre**
+- [ ] Figer `docs/spec-crypto.md` : couches A-D **toutes implémentées** (J1-J3c) → spec **candidate au gel v1.0** ; reste l'arbitrage sur le KAT cross-impl (CRY-8, non byte-compatible car primitives domain-separated TOVA)
 
 ## J2 — `tova-board` + `tova-protocol`
 - [x] Merkle append-only **RFC 6962 implémenté directement** (rs-merkle ne fournit pas la consistance) + STH Ed25519 + preuves inclusion/consistance + export CBOR (`ciborium`)
@@ -35,7 +35,7 @@
 ## J3 — Secret du choix : ElGamal à seuil + tally homomorphe
 - [x] **J3a** — `BallotCipher` : ElGamal exponentiel `(r·G, m·G + r·EK)` + preuve de validité (`K` disjonctives Chaum-Pedersen ∈{0,1} + 1 preuve de somme = 1), binding total du transcript `merlin` (EK+election_id+tous les chiffres), `zeroize` de l'aléa, tally homomorphe + déchiffrement autorité-unique (brique/test). 16 tests + 3 proptests + soundness (somme=2 / somme=0 rejetées). *(binding au niveau signature/key image finalisé en J3c)*
 - [x] **J3b** — `tova-threshold` : DKG Pedersen `t`-de-`n` via `frost-ristretto255` (RFC 9591) → `EK` + parts `sk_i` ; déchiffrement ElGamal à seuil (partiel `d_i = sk_i·c1` + preuve Chaum-Pedersen de déchiffrement correct + interpolation de Lagrange) ; ne déchiffre **que l'agrégat**. Config `t/n` paramétrable, défaut `n=3/t=2` (D8), testé aussi en `5/3` (Q5). 11 tests dont E2E DKG→chiffrement→tally à seuil. `frost` sans la feature `serialization` (évite `atomic-polyfill` non maintenu). *(cérémonie en mémoire ; transport distribué → J4)*
-- [ ] **J3c** — `tova-verify` v1 (rejoue signatures + unicité + validité + consistance + déchiffrement) + phase de dépouillement dans `tova-protocol`
+- [x] **J3c** — `tova-verify` v1 : rejoue depuis les données publiques (registre STH + consistance Merkle, signatures de cercle **liant** le bulletin, unicité des key images, validité des bulletins, déchiffrement à seuil) → verdict OUI/NON ; indépendant de `tova-protocol`. Dépouillement (`Election::tally`) + validation de validité du bulletin dans `cast` (binding bulletin↔signature↔key image confirmé). 7 tests dont **E2E complet** (DKG→vote→clôture→tally→re-audit = OUI) + falsifications (board altéré, mauvais signataire, total falsifié, déchiffrement forgé) = NON.
 
 ## J4 — Client WASM + serveur self-host (MVP démontrable)
 - [ ] `tova-wasm` (clé locale, Argon2id optionnel, construction bulletin, vérif inclusion/STH)
